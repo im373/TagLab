@@ -6204,9 +6204,12 @@ class TagLab(QMainWindow):
 
     #REFACTOR networks should be moved to a new class
     def resetNetworks(self):
-
-        import torch
-
+        try:
+            import torch
+        except Exception as e:
+            print("Incompatible version between pytorch, cuda and python.\n" +
+                "Knowing working version combinations are\n: Cuda 10.0, pytorch 1.0.0, python 3.6.8" + str(e))
+        
         torch.cuda.empty_cache()
 
         if self.classifier is not None:
