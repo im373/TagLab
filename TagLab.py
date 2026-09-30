@@ -37,6 +37,8 @@ from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QFileDialog, QCo
     QMessageBox, QGroupBox, QLayout, QHBoxLayout, QVBoxLayout, QFrame, QDockWidget, QTextEdit, QAction, \
     QDialog
 
+import pprint
+
 # CUSTOM
 import source.Mask as Mask
 from source.QtImageViewerPlus import QtImageViewerPlus
