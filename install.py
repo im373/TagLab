@@ -232,7 +232,7 @@ install_requires = [
     'scikit-image',
     'scikit-learn',
     'pandas',
-    'opencv-python',
+    'opencv-python-headless',
     'matplotlib',
     'albumentations',
     'shapely',
@@ -257,6 +257,7 @@ if flag_install_SAM:
 if osused == 'Windows':
     install_requires.insert(0, 'msvc-runtime')
 
+# All variants share cv2; remove them before installing only the headless package.
 opencv_packages = [
     'opencv-python',
     'opencv-contrib-python',
@@ -265,7 +266,7 @@ opencv_packages = [
 ]
 subprocess.run(
     [sys.executable, '-m', 'pip', 'uninstall', '-y', *opencv_packages],
-    check=False,
+    check=True,
 )
 
 # installing all the packages
