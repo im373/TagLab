@@ -163,7 +163,7 @@ class QtImageViewerPlus(QtImageViewer):
         # DRAWING SETTINGS
         self.fill_enabled = True
         self.border_enabled = True
-        self.ids_enable = True
+        self.ids_enabled = True
 
         self.show_grid = False
 
@@ -549,19 +549,13 @@ class QtImageViewerPlus(QtImageViewer):
 
     def enableIds(self):
 
-        for blob in self.annotations.seg_blobs:
-            if blob.id_item is not None:
-                blob.id_item.setVisible(True)
-
         self.ids_enabled = True
+        self.updateVisibility()
 
     def disableIds(self):
 
-        for blob in self.annotations.seg_blobs:
-            if blob.id_item is not None:
-                blob.id_item.setVisible(False)
-
         self.ids_enabled = False
+        self.updateVisibility()
 
     @pyqtSlot(int)
     def toggleIds(self, checked):
@@ -680,6 +674,7 @@ class QtImageViewerPlus(QtImageViewer):
             annpoint.id_item.setOpacity(0.7)
 
         self.scene.addItem(annpoint.id_item)
+        self.setBlobVisible(annpoint, self.project.isLabelVisible(annpoint.class_name))
 
 
     def drawShape(self, shape, layer_type):
@@ -749,8 +744,10 @@ class QtImageViewerPlus(QtImageViewer):
 
         blob.setupForDrawing()
         pen = self.border_selected_pen if blob in self.selected_blobs else self.border_pen
+        if not self.border_enabled:
+            pen = QPen(Qt.NoPen)
 
-        brush = self.project.classBrushFromName(blob)
+        brush = self.project.classBrushFromName(blob) if self.fill_enabled else QBrush(Qt.NoBrush)
         blob.qpath_gitem = self.scene.addPath(blob.qpath, pen, brush)
         blob.qpath_gitem.setZValue(1)
         blob.qpath_gitem.setOpacity(self.transparency_value)
@@ -767,6 +764,7 @@ class QtImageViewerPlus(QtImageViewer):
         else:
             blob.id_item.setOpacity(0.7)
         self.scene.addItem(blob.id_item)
+        self.setBlobVisible(blob, self.project.isLabelVisible(blob.class_name))
 
     def undrawBlob(self, blob, redraw=True):
 
@@ -1357,7 +1355,7 @@ class QtImageViewerPlus(QtImageViewer):
             if blob.qpath_gitem is not None:
                 blob.qpath_gitem.setVisible(visibility)
             if blob.id_item is not None:
-                blob.id_item.setVisible(visibility)
+                blob.id_item.setVisible(visibility and self.ids_enabled)
 
         #do the same for annotated points
 
@@ -1367,7 +1365,7 @@ class QtImageViewerPlus(QtImageViewer):
                 blob.cross2_gitem.setVisible(visibility)
                 blob.ellipse_gitem.setVisible(visibility)
             if blob.id_item is not None:
-                blob.id_item.setVisible(visibility)
+                blob.id_item.setVisible(visibility and self.ids_enabled)
 
     def updateVisibility(self):
 
