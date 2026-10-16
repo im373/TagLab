@@ -125,6 +125,7 @@ class Grid(QObject):
                         rect = self.scene.addRect(xc, yc, cell_width, cell_height, pen=pen_white, brush=brush50)
 
                     rect.setPos(self.offx, self.offy)
+                    rect.setZValue(10)
                     self.grid_rects.append(rect)
 
             # create text graphics item to visualize the notes
@@ -223,7 +224,6 @@ class Grid(QObject):
             note["x"] = new_x
             note["y"] = new_y
             note["txt"] = new_text
-
 
 
 
