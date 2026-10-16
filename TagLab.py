@@ -35,7 +35,7 @@ from PyQt5.QtGui import QFontDatabase, QFont, QPixmap, QIcon, QKeySequence, QPen
 from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QFileDialog, QComboBox, QMenuBar, QMenu, QSizePolicy, QScrollArea, \
     QLabel, QToolButton, QPushButton, QSlider, QCheckBox, \
     QMessageBox, QGroupBox, QLayout, QHBoxLayout, QVBoxLayout, QFrame, QDockWidget, QTextEdit, QAction, \
-    QDialog
+    QDialog, QInputDialog
 
 import pprint
 
@@ -6106,14 +6106,12 @@ class TagLab(QMainWindow):
         Load a previously saved projects.
         """
 
-        self.resetAll()
-
         QApplication.setOverrideCursor(Qt.WaitCursor)
         # TODO check if loadProject actually works!
         try:
-            self.project = loadProject(self.taglab_dir, filename, self.default_dictionary)
-            self.connectProject()
+            loaded_project = loadProject(self.taglab_dir, filename, self.default_dictionary)
         except Exception as e:
+            QApplication.restoreOverrideCursor()
             box = QMessageBox()
             box.setWindowTitle('Failed loading the project')
             box.setText("Could not load the file " + filename + "\n" + str(e))
@@ -6122,18 +6120,37 @@ class TagLab(QMainWindow):
 
         QApplication.restoreOverrideCursor()
 
+        selected_image_index = 0
+        if len(loaded_project.images) > 1:
+            map_choices = ["{}. {}".format(index + 1, image.name)
+                           for index, image in enumerate(loaded_project.images)]
+            selected_map, accepted = QInputDialog.getItem(
+                self,
+                "Select map",
+                "Choose the map to load:",
+                map_choices,
+                0,
+                False
+            )
+            if not accepted:
+                return
+            selected_image_index = map_choices.index(selected_map)
+
+        self.resetAll()
+        self.project = loaded_project
+        self.connectProject()
+
         self.setProjectTitle(self.project.filename)
 
         self.layers_widget.setProject(self.project)
         self.groupbox_blobpanel.updateRegionAttributes(self.project.region_attributes)
+        self.updateImageSelectionMenu()
 
-        # show the first map present in project
+        # Show the selected map and update all map-dependent UI.
         if len(self.project.images) > 0:
-            image = self.project.images[0]
+            image = self.project.images[selected_image_index]
             self.showImage(image)
             self.move()
-
-        self.updateImageSelectionMenu()
 
         if self.timer is None:
             self.activateAutosave()
