@@ -29,7 +29,7 @@ class QtImageViewer(QGraphicsView):
 
         # local handle to the scene's current image pixmap.
         self.pixmapitem = QGraphicsPixmapItem()
-        self.pixmapitem.setZValue(0)
+        self.pixmapitem.setZValue(-1)
         # Don't add to scene yet - will be added when pixmap is set in setImg()
 
         # OVERLAY

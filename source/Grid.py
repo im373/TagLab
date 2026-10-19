@@ -125,7 +125,7 @@ class Grid(QObject):
                         rect = self.scene.addRect(xc, yc, cell_width, cell_height, pen=pen_white, brush=brush50)
 
                     rect.setPos(self.offx, self.offy)
-                    rect.setZValue(10)
+                    rect.setZValue(0)
                     self.grid_rects.append(rect)
 
             # create text graphics item to visualize the notes
@@ -143,7 +143,7 @@ class Grid(QObject):
                 text_item.setPos(x, y)
                 text_item.setFlags(QGraphicsItem.ItemIsMovable | QGraphicsItem.ItemIsFocusable)
                 text_item.setTextInteractionFlags(Qt.TextSelectableByMouse | Qt.TextEditable)
-                text_item.setZValue(10)
+                text_item.setZValue(0)
                 # Add to scene after all properties are set
                 self.scene.addItem(text_item)
                 text_item.focusOut.connect(self.updateNotes)

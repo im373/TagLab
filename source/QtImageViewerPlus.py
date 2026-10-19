@@ -48,7 +48,8 @@ from skimage.morphology import binary_erosion
 
 
 #note on ZValue:
-# 0: image
+#-1: image
+# 0: grid
 # 1: blobs
 # 2: blob text
 # 3: selected blobs
